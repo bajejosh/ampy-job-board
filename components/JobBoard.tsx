@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JobPreviewModal } from "@/components/JobPreviewModal";
 import { Job, JobStatus, JOB_STATUSES, statusLabel } from "@/lib/types";
 import { formatCurrency } from "@/lib/format";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -76,22 +77,7 @@ export function JobBoard({ jobs, search, status }: JobBoardProps) {
           </div>
         ) : (
           <div className="job-list">
-            {jobs.map((job) => (
-              <Link className="job-row" href={`/jobs/${job.id}`} key={job.id}>
-                <div className="job-main">
-                  <div className="job-title-line">
-                    <h3>{job.customer}</h3>
-                    <StatusBadge status={job.status} />
-                  </div>
-                  <p>{job.jobType} <span aria-hidden="true">·</span> {job.suburb}</p>
-                </div>
-                <div className="job-value">
-                  <span>Value</span>
-                  <strong>{formatCurrency(job.value)}</strong>
-                </div>
-                <span className="row-arrow" aria-hidden="true">↗</span>
-              </Link>
-            ))}
+            {jobs.map((job) => <JobPreviewModal job={job} key={job.id} />)}
           </div>
         )}
       </section>
