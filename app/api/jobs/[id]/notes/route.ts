@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
-import { addNote, getJob } from "@/lib/jobs";
+import { addNote, getJob, getNotes } from "@/lib/jobs";
 
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: Request, { params }: RouteContext) {
+  const { id } = await params;
+  const job = await getJob(id);
+  if (!job) return NextResponse.json({ error: "Job not found" }, { status: 404 });
+  return NextResponse.json({ notes: await getNotes(id) });
+}
 
 export async function POST(request: Request, { params }: RouteContext) {
   const { id } = await params;
