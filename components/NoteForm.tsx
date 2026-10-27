@@ -1,9 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 import { JobNote } from "@/lib/types";
 
 export function NoteForm({ jobId, onSaved }: { jobId: string; onSaved?: (note: JobNote) => void }) {
+  const inputId = useId();
   const [content, setContent] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -23,7 +24,7 @@ export function NoteForm({ jobId, onSaved }: { jobId: string; onSaved?: (note: J
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
       });
-      const result = await response.json() as { error?: string; note?: JobNote };
+      const result = await response.json().catch(() => ({})) as { error?: string; note?: JobNote };
 
       if (!response.ok || !result.note) {
         throw new Error(result.error ?? "The note could not be saved");
@@ -42,9 +43,9 @@ export function NoteForm({ jobId, onSaved }: { jobId: string; onSaved?: (note: J
 
   return (
     <form className="note-form" onSubmit={handleSubmit}>
-      <label htmlFor="new-note">Add a note</label>
+      <label htmlFor={inputId}>Add a note</label>
       <textarea
-        id="new-note"
+        id={inputId}
         name="content"
         rows={3}
         maxLength={1000}

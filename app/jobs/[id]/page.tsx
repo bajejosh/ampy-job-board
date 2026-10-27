@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NotesPanel } from "@/components/NotesPanel";
 import { StatusBadge } from "@/components/StatusBadge";
 import { getJob, getNotes } from "@/lib/jobs";
+import { requirePageEmployee } from "@/lib/session";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 type JobDetailPageProps = {
@@ -10,6 +11,7 @@ type JobDetailPageProps = {
 };
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
+  const employee = await requirePageEmployee();
   const { id } = await params;
   const job = await getJob(id);
 
@@ -67,6 +69,10 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               <dd>{job.jobType}</dd>
             </div>
             <div>
+              <dt>Assigned to</dt>
+              <dd>{job.employeeName ?? "Unassigned"}</dd>
+            </div>
+            <div>
               <dt>Status</dt>
               <dd><StatusBadge status={job.status} /></dd>
             </div>
@@ -77,7 +83,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           </dl>
         </section>
 
-        <NotesPanel jobId={job.id} initialNotes={notes} />
+        <NotesPanel jobId={job.id} initialNotes={notes} currentEmployeeId={employee.id} />
       </div>
     </main>
   );

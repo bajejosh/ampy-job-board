@@ -1,18 +1,29 @@
+import { DashboardChrome } from "@/components/DashboardChrome";
 import { JobBoard } from "@/components/JobBoard";
 import { getJobs } from "@/lib/jobs";
+import { getCustomers, getEmployees } from "@/lib/people";
+import { requirePageEmployee } from "@/lib/session";
 import { parseStatus } from "@/lib/types";
-import { getEmployees } from "@/lib/people";
 
 type HomePageProps = {
   searchParams: Promise<{ search?: string; status?: string }>;
 };
 
 export default async function HomePage({ searchParams }: HomePageProps) {
+  const employee = await requirePageEmployee();
   const params = await searchParams;
-  const search = params.search?.trim() ?? "";
-  const status = parseStatus(params.status);
-  const jobs = await getJobs();
-  const employees = await getEmployees();
+  const [jobs, customers, employees] = await Promise.all([getJobs(), getCustomers(), getEmployees()]);
 
-  return <JobBoard jobs={jobs} employees={employees} search={search} status={status} />;
+  return (
+    <DashboardChrome title="Jobs" active="overview" employee={employee}>
+      <JobBoard
+        jobs={jobs}
+        customers={customers}
+        employees={employees}
+        currentEmployee={employee}
+        search={params.search?.trim() ?? ""}
+        status={parseStatus(params.status)}
+      />
+    </DashboardChrome>
+  );
 }

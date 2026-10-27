@@ -297,3 +297,13 @@ input::placeholder, textarea::placeholder { color: var(--ink-500); }
   .hero-copy { font-size: 16px; }
   .hero-mark { flex-basis: 74px; height: 74px; font-size: 18px; }
 }
+
+/* Signed-in account block in the sidebar */
+.sidebar-account { display: grid; gap: 8px; padding: 16px 14px; border-radius: 16px; color: var(--ink-700); background: var(--paper); font-size: 12px; line-height: 1.5; }
+.sidebar-account .table-action { justify-self: start; padding: 0; }
+.section-heading .button { flex-shrink: 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 760px) {
+  .sidebar-account { padding: 0; background: transparent; }
+  .sidebar-account span { display: none; }
+}

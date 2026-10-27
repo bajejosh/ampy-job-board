@@ -1,6 +1,6 @@
 # Ampy Job Board
 
-A small standalone Next.js job board for Ampy Services. It includes a 20-job sample dataset, customer search, status filtering, job detail pages, and a note form backed by PostgreSQL when `DATABASE_URL` is configured.
+A small standalone Next.js job board for Ampy Services. It covers a 20-job board with customer search, status filtering and five-per-page pagination, a job drawer with internal notes, customer and employee directories, employee logins, and job assignment, all backed by PostgreSQL.
 
 ## Requirements
 
@@ -10,38 +10,36 @@ A small standalone Next.js job board for Ampy Services. It includes a 20-job sam
 ## Local setup
 
 ```bash
-cd /Users/joshuamacaraig/ampy-job-board
 npm install
-cp .env.example .env.local
+cp .env.example .env.local   # then set DATABASE_URL
 ```
 
-For the full database path, create a database and run the schema and seed files:
+Create the database, then run the schema and seed. Both files are idempotent, and `schema.sql`
+also upgrades a database created by an earlier version (it backfills customers from job names
+and adds the session, login-attempt and note-author tables):
 
 ```bash
-createdb ampy_jobs
-export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ampy_jobs
 psql "$DATABASE_URL" -f db/schema.sql
 psql "$DATABASE_URL" -f db/seed.sql
 ```
 
-Set `DATABASE_URL` in `.env.local` before starting the app:
-
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ampy_jobs
-PGSSL=false
-```
-
-Then run:
+Seeded employees have no login. Create the first admin (Node 22.18+ runs the TypeScript script directly):
 
 ```bash
-npm run dev
+ADMIN_EMAIL=you@ampy.com.au ADMIN_NAME="Your Name" ADMIN_PASSWORD='at-least-12-chars' npm run create-admin
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Run it again with an existing email to promote that employee to admin and reset their password.
+Then `npm run dev` and sign in at [http://localhost:3000](http://localhost:3000).
 
-### Demo fallback
+## Access
 
-If `DATABASE_URL` is not set, the app uses the same 20 sample jobs from `lib/sample-data.ts` and stores added notes in process memory. This is only for local evaluation: notes are not durable and the fallback should not be used as a production deployment.
+- Every page and API route checks the session against the `sessions` table. Sessions last 12 hours,
+  and logging out, deactivating an employee or resetting their password ends them immediately.
+- **Staff** can view everything, add and edit jobs, assign employees, write notes and manage customers.
+- **Admins** also manage employees (accounts, passwords, access) and can delete jobs.
+- Login is limited to 5 failed attempts per email and 20 per IP in 15 minutes.
+- Notes record their author from the session; the API ignores any author in the request body.
 
 ## Verification
 
@@ -50,20 +48,14 @@ npm run typecheck
 npm run build
 ```
 
-The detail page also exposes the note API at `POST /api/jobs/:id/notes` with a JSON body such as:
-
-```json
-{ "content": "Customer confirmed access for Thursday morning." }
-```
-
 ## Deploying
 
 The app is ready for a Next.js host such as Vercel, Render, Railway, or a Node server:
 
 1. Create a PostgreSQL database.
-2. Run `db/schema.sql`, then `db/seed.sql` against that database.
+2. Run `db/schema.sql`, then `db/seed.sql`, then `npm run create-admin` against that database.
 3. Set `DATABASE_URL` in the host's environment settings. Set `PGSSL=true` if the provider requires SSL.
 4. Install dependencies and run `npm run build` during the build step.
 5. Run `npm run start` for a Node host, or use the host's standard Next.js deployment flow.
 
-No deployment has been performed from this workspace.
+
