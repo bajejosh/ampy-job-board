@@ -119,3 +119,36 @@ export async function addNote(jobId: string, content: string) {
   if (!rows?.[0]) throw new Error("The note could not be saved");
   return mapNote(rows[0]);
 }
+
+export type JobInput = Pick<Job, "customer" | "suburb" | "jobType" | "status" | "value">;
+
+export async function createJob(input: JobInput) {
+  if (!isDatabaseConfigured()) throw new Error("A database is required for admin changes");
+  const id = `job-${crypto.randomUUID()}`;
+  const rows = await dbQuery<JobRow>(
+    `INSERT INTO jobs (id, customer, suburb, job_type, status, value)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, customer, suburb, job_type, status, value, created_at`,
+    [id, input.customer, input.suburb, input.jobType, input.status, input.value],
+  );
+  if (!rows?.[0]) throw new Error("The job could not be created");
+  return mapJob(rows[0]);
+}
+
+export async function updateJob(id: string, input: JobInput) {
+  if (!isDatabaseConfigured()) throw new Error("A database is required for admin changes");
+  const rows = await dbQuery<JobRow>(
+    `UPDATE jobs SET customer = $2, suburb = $3, job_type = $4, status = $5, value = $6
+     WHERE id = $1
+     RETURNING id, customer, suburb, job_type, status, value, created_at`,
+    [id, input.customer, input.suburb, input.jobType, input.status, input.value],
+  );
+  if (!rows?.[0]) throw new Error("The job could not be found");
+  return mapJob(rows[0]);
+}
+
+export async function deleteJob(id: string) {
+  if (!isDatabaseConfigured()) throw new Error("A database is required for admin changes");
+  const rows = await dbQuery<{ id: string }>("DELETE FROM jobs WHERE id = $1 RETURNING id", [id]);
+  if (!rows?.[0]) throw new Error("The job could not be found");
+}

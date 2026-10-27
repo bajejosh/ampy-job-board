@@ -87,6 +87,22 @@ input::placeholder, textarea::placeholder { color: var(--ink-500); }
 .clear-link:hover, .back-link:hover { color: var(--blue-strong); }
 
 .board-section { padding: 64px 0 0; }
+.admin-header { padding: 72px 0 36px; }
+.admin-form { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper-strong); box-shadow: var(--shadow); }
+.admin-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.admin-fields label { display: grid; gap: 7px; color: var(--ink-700); font-size: 12px; font-weight: 800; }
+.admin-form-actions { display: flex; align-items: center; gap: 12px; margin-top: 20px; }
+.admin-list { padding-top: 56px; }
+.admin-row { display: grid; grid-template-columns: minmax(0, 1fr) 120px 100px auto; align-items: center; gap: 18px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-strong); }
+.admin-row + .admin-row { margin-top: 8px; }
+.admin-row strong, .admin-row span { display: block; }
+.admin-row span { margin-top: 4px; color: var(--ink-500); font-size: 12px; }
+.admin-row-actions { display: flex; gap: 8px; }
+.admin-login { max-width: 420px; margin: 12vh auto; padding: 32px; }
+.admin-login form { display: grid; gap: 16px; margin-top: 24px; }
+.admin-login label { display: grid; gap: 7px; color: var(--ink-700); font-size: 12px; font-weight: 800; }
+.form-error { color: #b33a22; font-size: 13px; }
+.button-danger { color: #a33a31; border: 1px solid #efb5ad; background: #fff2f0; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: var(--space-6); margin-bottom: 18px; }
 .section-heading > p { max-width: 310px; color: var(--ink-500); font-size: 13px; text-align: right; }
 .job-list { display: grid; gap: 10px; }
@@ -155,6 +171,9 @@ input::placeholder, textarea::placeholder { color: var(--ink-500); }
   .detail-back { padding-top: 40px; }
   .detail-header { align-items: start; flex-direction: column; padding-bottom: 30px; }
   .detail-grid { grid-template-columns: 1fr; }
+  .admin-fields { grid-template-columns: 1fr; }
+  .admin-row { grid-template-columns: 1fr 1fr; }
+  .admin-row-actions { grid-column: 1 / -1; }
   .detail-card { padding: 20px; }
   .note-form-footer { align-items: start; flex-direction: column; }
   .note-form-footer .button { width: 100%; }
