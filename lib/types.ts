@@ -9,6 +9,8 @@ export type Job = {
   status: JobStatus;
   value: number;
   createdAt: string;
+  employeeId?: string | null;
+  employeeName?: string | null;
 };
 
 export type JobNote = {

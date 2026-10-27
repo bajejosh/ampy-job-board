@@ -10,6 +10,8 @@ type JobRow = {
   status: JobStatus;
   value: number | string;
   created_at: Date | string;
+  employee_id?: string | null;
+  employee_name?: string | null;
 };
 
 type NoteRow = {
@@ -33,6 +35,8 @@ function mapJob(row: JobRow): Job {
     status: row.status,
     value: Number(row.value),
     createdAt: new Date(row.created_at).toISOString(),
+    employeeId: row.employee_id,
+    employeeName: row.employee_name,
   };
 }
 
@@ -70,8 +74,8 @@ export async function getJobs(filters: { search?: string; status?: JobStatus } =
 
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   const rows = await dbQuery<JobRow>(
-    `SELECT id, customer, suburb, job_type, status, value, created_at
-     FROM jobs ${where} ORDER BY created_at DESC`,
+    `SELECT j.id, j.customer, j.suburb, j.job_type, j.status, j.value, j.created_at, j.employee_id, e.name AS employee_name
+     FROM jobs j LEFT JOIN employees e ON e.id = j.employee_id ${where} ORDER BY j.created_at DESC`,
     values,
   );
 
@@ -82,7 +86,7 @@ export async function getJob(id: string) {
   if (!isDatabaseConfigured()) return sampleJobs.find((job) => job.id === id) ?? null;
 
   const rows = await dbQuery<JobRow>(
-    `SELECT id, customer, suburb, job_type, status, value, created_at FROM jobs WHERE id = $1`,
+    `SELECT j.id, j.customer, j.suburb, j.job_type, j.status, j.value, j.created_at, j.employee_id, e.name AS employee_name FROM jobs j LEFT JOIN employees e ON e.id = j.employee_id WHERE j.id = $1`,
     [id],
   );
   return rows?.[0] ? mapJob(rows[0]) : null;
@@ -120,16 +124,16 @@ export async function addNote(jobId: string, content: string) {
   return mapNote(rows[0]);
 }
 
-export type JobInput = Pick<Job, "customer" | "suburb" | "jobType" | "status" | "value">;
+export type JobInput = Pick<Job, "customer" | "suburb" | "jobType" | "status" | "value"> & { employeeId?: string | null };
 
 export async function createJob(input: JobInput) {
   if (!isDatabaseConfigured()) throw new Error("A database is required for admin changes");
   const id = `job-${crypto.randomUUID()}`;
   const rows = await dbQuery<JobRow>(
-    `INSERT INTO jobs (id, customer, suburb, job_type, status, value)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, customer, suburb, job_type, status, value, created_at`,
-    [id, input.customer, input.suburb, input.jobType, input.status, input.value],
+    `INSERT INTO jobs (id, customer, suburb, job_type, status, value, employee_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id, customer, suburb, job_type, status, value, created_at, employee_id`,
+    [id, input.customer, input.suburb, input.jobType, input.status, input.value, input.employeeId ?? null],
   );
   if (!rows?.[0]) throw new Error("The job could not be created");
   return mapJob(rows[0]);
@@ -138,10 +142,10 @@ export async function createJob(input: JobInput) {
 export async function updateJob(id: string, input: JobInput) {
   if (!isDatabaseConfigured()) throw new Error("A database is required for admin changes");
   const rows = await dbQuery<JobRow>(
-    `UPDATE jobs SET customer = $2, suburb = $3, job_type = $4, status = $5, value = $6
+    `UPDATE jobs SET customer = $2, suburb = $3, job_type = $4, status = $5, value = $6, employee_id = $7
      WHERE id = $1
-     RETURNING id, customer, suburb, job_type, status, value, created_at`,
-    [id, input.customer, input.suburb, input.jobType, input.status, input.value],
+     RETURNING id, customer, suburb, job_type, status, value, created_at, employee_id`,
+    [id, input.customer, input.suburb, input.jobType, input.status, input.value, input.employeeId ?? null],
   );
   if (!rows?.[0]) throw new Error("The job could not be found");
   return mapJob(rows[0]);

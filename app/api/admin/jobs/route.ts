@@ -14,7 +14,8 @@ function parseInput(value: unknown) {
   if (!customer || !suburb || !jobType || !JOB_STATUSES.includes(status as never) || !Number.isFinite(amount) || amount < 0) {
     throw new Error("Enter a customer, suburb, job type, valid status, and non-negative value");
   }
-  return { customer, suburb, jobType, status: status as typeof JOB_STATUSES[number], value: amount };
+  const employeeId = typeof input.employeeId === "string" && input.employeeId ? input.employeeId : null;
+  return { customer, suburb, jobType, status: status as typeof JOB_STATUSES[number], value: amount, employeeId };
 }
 
 export async function POST(request: Request) {

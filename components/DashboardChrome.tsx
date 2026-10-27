@@ -1,0 +1,7 @@
+"use client";
+import Link from "next/link";
+
+export function DashboardChrome({ children, title }: { children: React.ReactNode; title?: string }) {
+  async function logout() { await fetch("/api/logout", { method: "POST" }); window.location.href = "/login"; }
+  return <main className="dashboard-shell"><aside className="dashboard-sidebar"><Link className="sidebar-brand" href="/"><img className="brand-logo" src="https://ampy.com.au/wp-content/uploads/2025/09/logo.png" alt="Ampy Electrical" /></Link><div className="sidebar-label">Workspace</div><Link className="sidebar-link" href="/">Overview</Link><Link className="sidebar-link" href="/customers">Customers</Link><Link className="sidebar-link" href="/employees">Employees</Link><div className="sidebar-spacer" /><button className="sidebar-logout" onClick={logout}>Log out</button><a className="sidebar-phone" href="tel:0344163638">Call Ampy<br /><strong>(03) 4416 3638</strong></a></aside><section className="dashboard-main"><header className="topbar"><span className="brand-context">Operations workspace</span><div className="topbar-page-title">{title ?? "Ampy Services"}</div><a className="brand-call" href="tel:0344163638">Call Ampy · (03) 4416 3638</a></header>{children}</section></main>;
+}
