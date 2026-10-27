@@ -116,6 +116,10 @@ input::placeholder, textarea::placeholder { color: var(--ink-500); }
 .modal-summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 6px; }
 .modal-summary strong { font-size: 24px; }
 .modal-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.admin-form { margin: 0; border: 0; box-shadow: none; }
+.admin-form .modal-header { margin-bottom: 22px; }
+.confirm-card { max-width: 500px; }
+.confirm-copy { margin-top: 22px; color: var(--ink-700); }
 .button-danger { color: #a33a31; border: 1px solid #efb5ad; background: #fff2f0; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: var(--space-6); margin-bottom: 18px; }
 .section-heading > p { max-width: 310px; color: var(--ink-500); font-size: 13px; text-align: right; }

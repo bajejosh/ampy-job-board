@@ -13,6 +13,7 @@ export function AdminJobs({ initialJobs }: Props) {
   const [editing, setEditing] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [deleting, setDeleting] = useState<Job | null>(null);
 
   function change(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: field === "value" ? Number(value) : value } as FormState));
@@ -36,13 +37,13 @@ export function AdminJobs({ initialJobs }: Props) {
     setForm(blank); setEditing(null); setMessage(editing ? "Job updated." : "Job created."); setBusy(false); (document.getElementById("job-editor") as HTMLDialogElement).close();
   }
 
-  async function remove(id: string) {
-    if (!window.confirm("Delete this job and its notes?")) return;
+  async function remove() {
+    if (!deleting) return;
     setBusy(true); setMessage("");
-    const response = await fetch(`/api/admin/jobs/${id}`, { method: "DELETE" });
+    const response = await fetch(`/api/admin/jobs/${deleting.id}`, { method: "DELETE" });
     const payload = await response.json();
     if (!response.ok) { setMessage(payload.error ?? "Could not delete job"); setBusy(false); return; }
-    setJobs((current) => current.filter((job) => job.id !== id)); setMessage("Job deleted."); setBusy(false);
+    setJobs((current) => current.filter((job) => job.id !== deleting.id)); setDeleting(null); setMessage("Job deleted."); setBusy(false);
   }
 
   return <main className="shell admin-shell">
@@ -62,6 +63,9 @@ export function AdminJobs({ initialJobs }: Props) {
         <div className="admin-form-actions"><button className="button button-primary" disabled={busy}>{busy ? "Saving…" : editing ? "Save changes" : "Create job"}</button><button type="button" className="button button-secondary" onClick={() => (document.getElementById("job-editor") as HTMLDialogElement).close()}>Cancel</button><span className="form-message">{message}</span></div>
       </form>
     </dialog>
-    <section className="admin-list">{jobs.map((job) => <div className="admin-row" key={job.id}><div><strong>{job.customer}</strong><span>{job.jobType} · {job.suburb}</span></div><span>{statusLabel(job.status)}</span><span>${job.value.toLocaleString("en-AU")}</span><div className="admin-row-actions"><button className="button button-secondary" onClick={() => { edit(job); (document.getElementById("job-editor") as HTMLDialogElement).showModal(); }}>Edit</button><button className="button button-danger" onClick={() => remove(job.id)}>Delete</button></div></div>)}</section>
+    <section className="admin-list">{jobs.map((job) => <div className="admin-row" key={job.id}><div><strong>{job.customer}</strong><span>{job.jobType} · {job.suburb}</span></div><span>{statusLabel(job.status)}</span><span>${job.value.toLocaleString("en-AU")}</span><div className="admin-row-actions"><button className="button button-secondary" onClick={() => { edit(job); (document.getElementById("job-editor") as HTMLDialogElement).showModal(); }}>Edit</button><button className="button button-danger" onClick={() => setDeleting(job)}>Delete</button></div></div>)}</section>
+    <dialog open={Boolean(deleting)} className="job-modal" onClick={(event) => { if (event.target === event.currentTarget) setDeleting(null); }}>
+      <div className="modal-card confirm-card"><div className="modal-header"><div><span className="eyebrow">Remove job</span><h2>Delete this job?</h2></div><button className="modal-close" type="button" aria-label="Close" onClick={() => setDeleting(null)}>×</button></div><p className="confirm-copy">This will remove <strong>{deleting?.customer}</strong> and its saved notes from the work queue.</p><div className="modal-actions"><button className="button button-danger" disabled={busy} onClick={remove}>{busy ? "Deleting…" : "Delete job"}</button><button className="button button-secondary" onClick={() => setDeleting(null)}>Keep job</button></div></div>
+    </dialog>
   </main>;
 }
