@@ -21,7 +21,10 @@ export function JobBoard({ jobs, search, status }: JobBoardProps) {
           <img className="brand-logo" src="https://ampy.com.au/wp-content/uploads/2025/09/logo.png" alt="Ampy Electrical" />
           <span className="brand-context">Operations workspace</span>
         </Link>
-        <a className="brand-call" href="tel:0344163638">Call Ampy · (03) 4416 3638</a>
+        <div className="topbar-actions">
+          <Link className="admin-link" href="/admin">Admin</Link>
+          <a className="brand-call" href="tel:0344163638">Call Ampy · (03) 4416 3638</a>
+        </div>
       </header>
 
       <section className="hero" aria-labelledby="page-title">

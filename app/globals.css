@@ -60,6 +60,8 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .brand-logo { display: block; width: 118px; height: auto; }
 .brand-context { padding-left: 12px; border-left: 1px solid var(--line-strong); color: var(--ink-500); font-size: 12px; }
 .brand-call { color: var(--orange-dark); font-size: 13px; font-weight: 800; }
+.topbar-actions { display: flex; align-items: center; gap: 18px; }
+.admin-link { color: var(--orange-dark); font-size: 13px; font-weight: 800; }
 
 .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-8); padding: 92px 0 56px; }
 .eyebrow { display: block; color: var(--ink-500); font-size: 11px; font-weight: 800; letter-spacing: 0.14em; line-height: 1.2; text-transform: uppercase; }
