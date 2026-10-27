@@ -6,10 +6,11 @@
 
 ## Now
 
-- Run typecheck, production build, and local browser smoke checks.
-- Validate the Postgres schema/seed path with a real database when available.
+- Josh: review `josh/security-fixes`, then decide when to run `db/schema.sql` and `npm run create-admin` on Neon.
+- Deploy only after the Neon migration; the old main-branch build has the auth bypass.
 
 ## Next
 
-- Add authentication and role-aware access if Ampy requests it.
-- Add job creation/editing and status transitions if the test scope expands.
+- Medium review items: filters in the URL, one shared job drawer, semantic jobs table, smaller hero on mobile.
+- Numbered migrations instead of the single idempotent schema file.
+- Strict SSL to Neon (drop `rejectUnauthorized: false`).
